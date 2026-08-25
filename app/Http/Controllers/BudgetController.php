@@ -10,25 +10,31 @@ class BudgetController extends Controller
     // Show the Budget Table
     public function index(Request $request)
     {
-        // Fetch distinct months from the database
-        $months = Budget::selectRaw('DISTINCT MONTH(month_year) as month')
-            ->orderBy('month') // Sort months in ascending order
-            ->pluck('month')
+        $userId = auth()->id();
+
+        $userMonthYears = Budget::where('user_id', $userId)->pluck('month_year');
+
+        // Distinct months present in the user's budgets
+        $months = $userMonthYears
+            ->map(fn ($date) => $date->month)
+            ->unique()
+            ->sort()
             ->mapWithKeys(function ($month) {
                 return [$month => \DateTime::createFromFormat('!m', $month)->format('F')];
             });
 
-        // Fetch distinct years from the database
-        $years = Budget::selectRaw('DISTINCT YEAR(month_year) as year')
-            ->orderBy('year', 'desc') // Sort years in descending order
-            ->pluck('year');
+        // Distinct years present in the user's budgets
+        $years = $userMonthYears
+            ->map(fn ($date) => $date->year)
+            ->unique()
+            ->sortDesc()
+            ->values();
 
-        // Fetch distinct categories
-        $categories = Budget::distinct('category')
-            ->pluck('category');
+        // Distinct categories used by the user
+        $categories = Budget::where('user_id', $userId)->pluck('category')->unique()->values();
 
-        // Apply filters based on the request
-        $query = Budget::query();
+        // Apply filters based on the request, always scoped to the current user
+        $query = Budget::where('user_id', $userId);
         if ($request->filled('month')) {
             $query->whereMonth('month_year', $request->input('month'));
         }

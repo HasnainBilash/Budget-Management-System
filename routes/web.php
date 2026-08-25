@@ -71,7 +71,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [SubtaskController::class, 'store'])->name('subtasks.store');
         Route::put('/{subtask}', [SubtaskController::class, 'update'])->name('subtasks.update');
         Route::delete('/{subtask}', [SubtaskController::class, 'destroy'])->name('subtasks.destroy');
-        Route::get('/manage', [SubtaskController::class, 'manage'])->name('subtasks.manage');
     });
 
     //Comment routes

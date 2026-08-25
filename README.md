@@ -53,7 +53,13 @@ Edit `.env`: set `DB_CONNECTION`, `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_P
 
 ### Granting admin access
 
-New accounts default to the `user` role. There's currently no in-app way to promote a user to admin — do it directly:
+New accounts default to the `user` role. To create the initial admin account, set `ADMIN_EMAIL` and `ADMIN_PASSWORD` (and optionally `ADMIN_NAME`) in `.env`, then run:
+
+```bash
+php artisan db:seed
+```
+
+This is safe to run more than once — it won't duplicate or overwrite an existing account with that email. There's still no in-app UI to promote further users to admin; do that directly:
 
 ```bash
 php artisan tinker --execute="App\Models\User::where('email', 'you@example.com')->update(['role' => 'admin']);"
@@ -67,6 +73,5 @@ php artisan test
 
 ## Known limitations
 
-- No in-app flow for granting the admin role (see above) — a small admin-management UI or a seeded first-admin account would close this gap.
-- The `task_categories` table and model scaffolding exist in the schema but aren't wired into any controller or view yet — an unfinished feature, not a bug.
-- OTP delivery uses the `log` mail driver by default (`MAIL_MAILER=log` in `.env.example`), so reset codes land in `storage/logs/laravel.log` rather than an inbox until real SMTP credentials are configured.
+- No in-app UI for promoting additional users to admin beyond the seeded account (see above).
+- OTP delivery uses the `log` mail driver by default (`MAIL_MAILER=log` in `.env.example`), so reset codes land in `storage/logs/laravel.log` rather than an inbox until real SMTP credentials are configured (see `MAIL_*` in `.env.example`).

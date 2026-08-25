@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class TaskController extends Controller
@@ -33,9 +34,9 @@ class TaskController extends Controller
     {
         $project = null;
         if ($request->has('project_id')) {
-            $project = Project::findOrFail($request->project_id);
+            $project = Project::where('user_id', auth()->id())->findOrFail($request->project_id);
         }
-        
+
         return view('tasks.create', compact('project'));
     }
 
@@ -44,7 +45,7 @@ class TaskController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'project_id' => 'required|exists:projects,id',
+            'project_id' => 'required|exists:projects,id,user_id,' . auth()->id(),
             'priority' => 'required|in:low,medium,high',
             'status' => 'required|in:to_do,in_progress,done',
             'due_date' => 'required|date',
@@ -58,16 +59,22 @@ class TaskController extends Controller
 
     public function show(Task $task)
     {
+        Gate::authorize('view', $task);
+
         return view('tasks.show', compact('task'));
     }
 
     public function edit(Task $task)
     {
+        Gate::authorize('update', $task);
+
         return view('tasks.edit', compact('task'));
     }
 
     public function update(Request $request, Task $task)
     {
+        Gate::authorize('update', $task);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -84,6 +91,8 @@ class TaskController extends Controller
 
     public function destroy(Task $task)
     {
+        Gate::authorize('delete', $task);
+
         $projectId = $task->project_id;
         $task->delete();
 

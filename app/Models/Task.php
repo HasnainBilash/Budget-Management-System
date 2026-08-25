@@ -5,9 +5,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Project; 
-use App\Models\User; 
-use App\Models\Subtask; 
+use App\Models\Project;
+use App\Models\User;
+use App\Models\Subtask;
+use App\Models\Comment;
 
 class Task extends Model
 {
@@ -44,5 +45,10 @@ class Task extends Model
     public function subtasks()
     {
         return $this->hasMany(Subtask::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }
