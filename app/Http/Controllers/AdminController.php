@@ -36,18 +36,21 @@ class AdminController extends Controller
 
     public function spendingTrends()
     {
-        $spendingData = \App\Models\Budget::selectRaw(
-            'category, budget_amount, remaining_amount, 
-            (budget_amount - remaining_amount) as spent_amount, 
-            GREATEST(0, remaining_amount) as remaining_amount, 
-            GREATEST(0, -remaining_amount) as amount_exceeded,
-            MONTH(month_year) as month, 
-            YEAR(month_year) as year'
-        )
-            ->groupBy('id', 'category', 'budget_amount', 'remaining_amount', 'month', 'year')
-            ->orderBy('year', 'desc')
-            ->orderBy('month', 'desc')
-            ->get();
+        $spendingData = \App\Models\Budget::orderBy('month_year', 'desc')
+            ->get()
+            ->map(function ($budget) {
+                $remaining = $budget->remaining_amount ?? 0;
+
+                return (object) [
+                    'category' => $budget->category,
+                    'budget_amount' => $budget->budget_amount,
+                    'remaining_amount' => max(0, $remaining),
+                    'spent_amount' => $budget->budget_amount - $remaining,
+                    'amount_exceeded' => max(0, -$remaining),
+                    'month' => $budget->month_year->month,
+                    'year' => $budget->month_year->year,
+                ];
+            });
 
         $totalSpending = $spendingData->sum('spent_amount');
 
@@ -66,12 +69,17 @@ class AdminController extends Controller
 
     public function showProductivity()
     {
-        $productivityData = \App\Models\Task::selectRaw("
-            COUNT(*) as total_tasks,
-            AVG(TIMESTAMPDIFF(MINUTE, created_at, updated_at)) as avg_completion_time
-        ")
-        ->where('status', 'done')
-        ->first();
+        $completedTasks = \App\Models\Task::where('status', 'done')->get();
+
+        $totalTasks = $completedTasks->count();
+        $avgCompletionTime = $totalTasks > 0
+            ? $completedTasks->avg(fn ($task) => $task->created_at->diffInMinutes($task->updated_at))
+            : 0;
+
+        $productivityData = (object) [
+            'total_tasks' => $totalTasks,
+            'avg_completion_time' => $avgCompletionTime,
+        ];
 
         return view('admin.productivity', compact('productivityData'));
     }

@@ -83,12 +83,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('projects', ProjectController::class);
 
     //Atanu
-    Route::get('/admin', [AdminController::class, 'showAdmin'])->name('admin');
-    Route::get('/admin/manage-users', [AdminController::class, 'manageUsers'])->name('admin.manage-users');
-    Route::get('/admin/tasks', [AdminController::class, 'showTasks'])->name('admin.tasks');
-    Route::patch('/admin/users/{user}', [AdminController::class, 'updateUserStatus'])->name('admin.update-user-status');
-    Route::get('/admin/spendings', [AdminController::class, 'spendingTrends'])->name('admin.spendings');
-    Route::get('/admin/productivity', [AdminController::class, 'showProductivity'])->name('admin.productivity');
-    Route::get('/admin/dashboard', [AdminController::class, 'showDashboard'])->name('admin.dashboard');
+    Route::middleware('can:admin')->group(function () {
+        Route::get('/admin', [AdminController::class, 'showAdmin'])->name('admin');
+        Route::get('/admin/manage-users', [AdminController::class, 'manageUsers'])->name('admin.manage-users');
+        Route::get('/admin/tasks', [AdminController::class, 'showTasks'])->name('admin.tasks');
+        Route::patch('/admin/users/{user}', [AdminController::class, 'updateUserStatus'])->name('admin.update-user-status');
+        Route::get('/admin/spendings', [AdminController::class, 'spendingTrends'])->name('admin.spendings');
+        Route::get('/admin/productivity', [AdminController::class, 'showProductivity'])->name('admin.productivity');
+        Route::get('/admin/dashboard', [AdminController::class, 'showDashboard'])->name('admin.dashboard');
+    });
 });
 
