@@ -1,86 +1,84 @@
 @extends('layouts.app')
 
+@section('title', 'Admin Dashboard')
+
 @php
 use Illuminate\Support\Str;
 @endphp
 
 @section('content')
-<div class="bg-gray-100 min-h-screen p-8">
-    <div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 class="text-3xl font-bold mb-4">Admin Dashboard</h1>
-        <p class="text-lg mb-6">View key performance indicators and manage the system.</p>
-
-        <div class="mb-6 flex justify-between">
-            <a href="{{ route('projects.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-                Create Project
-            </a>
-            <a href="{{ route('projects.index') }}" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
-                View Projects
-            </a>
-        </div>
-
-        <div class="mb-6">
-            <h2 class="text-xl font-semibold mb-4">Completed vs. Pending Tasks</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-blue-50 p-4 rounded-lg shadow-sm text-center">
-                    <h3 class="text-2xl font-bold text-blue-800">Completed Tasks</h3>
-                    <p class="text-4xl text-gray-900 mt-2">{{ $taskStats->completed_tasks }}</p>
-                </div>
-                <div class="bg-red-50 p-4 rounded-lg shadow-sm text-center">
-                    <h3 class="text-2xl font-bold text-red-800">Pending Tasks</h3>
-                    <p class="text-4xl text-gray-900 mt-2">{{ $taskStats->pending_tasks }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="mb-6">
-            <h2 class="text-xl font-semibold mb-4">Recent Projects</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @forelse($recentProjects as $project)
-                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-medium text-gray-900">
-                                <a href="{{ route('projects.show', $project) }}" class="hover:text-blue-600">
-                                    {{ $project->title }}
-                                </a>
-                            </h3>
-                            <span class="px-2 py-1 text-sm rounded-full {{ $project->status === 'completed' ? 'bg-green-100 text-green-800' : ($project->status === 'in_progress' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') }}">
-                                {{ str_replace('_', ' ', ucfirst($project->status)) }}
-                            </span>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-2">{{ Str::limit($project->description, 100) }}</p>
-                        <div class="flex justify-between text-sm text-gray-500">
-                            <span>{{ $project->tasks_count }} tasks</span>
-                            <span>Due {{ $project->end_date->format('M d, Y') }}</span>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-span-2 text-center py-4 text-gray-500">
-                        No projects found
-                    </div>
-                @endforelse
-            </div>
-            <div class="mt-4 text-right">
-                <a href="{{ route('projects.index') }}" class="text-blue-600 hover:text-blue-800">View all projects →</a>
-            </div>
-        </div>
-
+<div class="page-wrap">
+    <div class="page-header">
         <div>
-            <h2 class="text-xl font-semibold mb-4">Top Expense Categories</h2>
-            <table class="w-full text-left border-collapse bg-white shadow-md">
+            <h1 class="page-title">Team dashboard</h1>
+            <p class="page-subtitle">Key performance indicators across the whole system.</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{{ route('projects.index') }}" class="btn-secondary">View projects</a>
+            <a href="{{ route('projects.create') }}" class="btn-primary">New project</a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+        <div class="card card-body text-center">
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-emerald-700">Completed tasks</h3>
+            <p class="text-4xl font-bold text-slate-900 mt-2">{{ $taskStats->completed_tasks }}</p>
+        </div>
+        <div class="card card-body text-center">
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-amber-700">Pending tasks</h3>
+            <p class="text-4xl font-bold text-slate-900 mt-2">{{ $taskStats->pending_tasks }}</p>
+        </div>
+    </div>
+
+    <div class="mb-10">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold text-slate-900">Recent projects</h2>
+            <a href="{{ route('projects.index') }}" class="btn-link">View all &rarr;</a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            @forelse($recentProjects as $project)
+                <div class="card card-body">
+                    <div class="flex justify-between items-start mb-2 gap-2">
+                        <h3 class="font-medium text-slate-900">
+                            <a href="{{ route('projects.show', $project) }}" class="hover:text-emerald-700">{{ $project->title }}</a>
+                        </h3>
+                        <span class="{{ match($project->status) { 'completed' => 'badge-green', 'in_progress' => 'badge-blue', 'on_hold' => 'badge-yellow', default => 'badge-gray' } }} shrink-0">
+                            {{ str_replace('_', ' ', ucfirst($project->status)) }}
+                        </span>
+                    </div>
+                    <p class="text-sm text-slate-500 mb-2">{{ Str::limit($project->description, 100) }}</p>
+                    <div class="flex justify-between text-sm text-slate-500">
+                        <span>{{ $project->tasks_count }} tasks</span>
+                        <span>Due {{ $project->end_date->format('M d, Y') }}</span>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-2 empty-state">
+                    <p class="text-slate-500">No projects found.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-lg font-semibold text-slate-900 mb-4">Top expense categories</h2>
+        <div class="card overflow-hidden">
+            <table class="w-full text-left">
                 <thead>
-                    <tr class="bg-gray-100">
-                        <th class="p-4 text-gray-800 font-semibold">Category</th>
-                        <th class="p-4 text-gray-800 font-semibold">Total Spent</th>
+                    <tr class="bg-slate-50 border-b border-slate-200">
+                        <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Category</th>
+                        <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Total spent</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach ($topExpenseCategories as $category)
-                        <tr class="border-t">
-                            <td class="p-4 text-gray-800">{{ $category->category }}</td>
-                            <td class="p-4 text-gray-800">${{ number_format($category->total_spent, 2) }}</td>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse ($topExpenseCategories as $category)
+                        <tr>
+                            <td class="px-4 py-3 text-sm font-medium text-slate-900">{{ $category->category }}</td>
+                            <td class="px-4 py-3 text-sm text-slate-700">${{ number_format($category->total_spent, 2) }}</td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr><td colspan="2" class="px-4 py-6 text-center text-sm text-slate-500">No expense data yet.</td></tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

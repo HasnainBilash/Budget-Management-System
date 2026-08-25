@@ -1,4 +1,104 @@
-/* File: resources/css/app.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-slate-50 text-slate-800 font-sans antialiased;
+    }
+}
+
+@layer components {
+    /* Buttons */
+    .btn {
+        @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium
+            transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2
+            disabled:opacity-50 disabled:pointer-events-none;
+    }
+    .btn-primary {
+        @apply btn bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 focus:ring-emerald-500;
+    }
+    .btn-secondary {
+        @apply btn bg-white text-slate-700 border border-slate-300 shadow-sm hover:bg-slate-50 focus:ring-slate-400;
+    }
+    .btn-danger {
+        @apply btn bg-red-600 text-white shadow-sm hover:bg-red-700 focus:ring-red-500;
+    }
+    .btn-sm {
+        @apply px-3 py-1.5 text-xs;
+    }
+    .btn-link {
+        @apply inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:text-emerald-800;
+    }
+    .btn-link-danger {
+        @apply inline-flex items-center gap-1 text-sm font-medium text-red-600 hover:text-red-700;
+    }
+
+    /* Surfaces */
+    .card {
+        @apply bg-white rounded-xl border border-slate-200 shadow-sm;
+    }
+    .card-body {
+        @apply p-6;
+    }
+
+    /* Forms */
+    .field {
+        @apply mb-4;
+    }
+    .label {
+        @apply block text-sm font-medium text-slate-700 mb-1.5;
+    }
+    .input,
+    select.input,
+    textarea.input {
+        @apply block w-full rounded-lg border-slate-300 bg-white text-slate-900 shadow-sm
+            placeholder:text-slate-400
+            focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm;
+    }
+
+    /* Badges */
+    .badge {
+        @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap;
+    }
+    .badge-gray {
+        @apply badge bg-slate-100 text-slate-700;
+    }
+    .badge-blue {
+        @apply badge bg-blue-100 text-blue-700;
+    }
+    .badge-green {
+        @apply badge bg-emerald-100 text-emerald-700;
+    }
+    .badge-yellow {
+        @apply badge bg-amber-100 text-amber-800;
+    }
+    .badge-red {
+        @apply badge bg-red-100 text-red-700;
+    }
+
+    /* Alerts */
+    .alert-success {
+        @apply rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 text-sm;
+    }
+    .alert-error {
+        @apply rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-sm;
+    }
+
+    /* Page chrome */
+    .page-wrap {
+        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10;
+    }
+    .page-header {
+        @apply flex flex-wrap items-center justify-between gap-4 mb-8;
+    }
+    .page-title {
+        @apply text-2xl font-bold text-slate-900 tracking-tight;
+    }
+    .page-subtitle {
+        @apply mt-1 text-sm text-slate-500;
+    }
+    .empty-state {
+        @apply text-center py-16 px-6 rounded-xl border-2 border-dashed border-slate-200;
+    }
+}

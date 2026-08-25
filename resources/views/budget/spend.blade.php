@@ -1,17 +1,22 @@
 @extends('layouts.app')
 
+@section('title', 'Add Expense')
+
 @section('content')
-<div class="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-md border border-gray-300">
-    <h1 class="text-2xl font-bold mb-4 text-center text-blue-800">Add Expense to Your Budget</h1>
+<div class="page-wrap max-w-lg">
+    <div class="page-header">
+        <h1 class="page-title">Log an expense</h1>
+    </div>
 
-    <form method="POST" action="{{ route('budgets.storeSpend') }}">
-        @csrf
+    <div class="card card-body">
+        @include('partials.alerts')
 
-        <!-- Budget Categories with Months -->
-        <div class="mb-6 border border-gray-300 p-4 rounded-md">
-            <label for="category_month" class="block font-semibold mb-2">Your Planned Budget Categories and Months</label>
-            <div class="border border-gray-300 rounded-md">
-                <select name="category_month" required class="w-full border-none rounded-md p-2 focus:ring focus:ring-blue-300">
+        <form method="POST" action="{{ route('budgets.storeSpend') }}">
+            @csrf
+
+            <div class="field">
+                <label for="category_month" class="label">Budget category</label>
+                <select name="category_month" id="category_month" required class="input">
                     @foreach ($budgets as $budget)
                         <option value="{{ $budget->id }}">
                             {{ $budget->category }} ({{ \Carbon\Carbon::parse($budget->month_year)->format('F Y') }})
@@ -19,23 +24,14 @@
                     @endforeach
                 </select>
             </div>
-        </div>
 
-        <!-- Amount Spent -->
-        <div class="mb-6 border border-gray-300 p-4 rounded-md">
-            <label for="amount" class="block font-semibold mb-2">Amount Spent</label>
-            <div class="border border-gray-300 rounded-md">
-                <input type="number" name="amount" step="0.01" required 
-                       class="w-full border-none rounded-md p-2 focus:ring focus:ring-blue-300">
+            <div class="field">
+                <label for="amount" class="label">Amount spent</label>
+                <input type="number" name="amount" id="amount" step="0.01" required class="input" placeholder="0.00">
             </div>
-        </div>
 
-        <!-- Submit Button -->
-        <div class="text-center">
-            <button type="submit" class="px-6 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition">
-                Submit Expense
-            </button>
-        </div>
-    </form>
+            <button type="submit" class="btn-primary w-full py-2.5 mt-2">Submit expense</button>
+        </form>
+    </div>
 </div>
 @endsection

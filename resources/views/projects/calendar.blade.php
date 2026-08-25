@@ -1,18 +1,26 @@
 @extends('layouts.app')
 
+@section('title', 'Project Calendar')
+
 @section('styles')
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+<style>
+    #calendar { font-family: inherit; }
+    .fc .fc-toolbar-title { font-size: 1.25rem; font-weight: 700; color: #0f172a; }
+    .fc .fc-button-primary { background-color: #059669; border-color: #059669; }
+    .fc .fc-button-primary:hover { background-color: #047857; border-color: #047857; }
+    .fc .fc-button-primary:disabled { background-color: #a7f3d0; border-color: #a7f3d0; }
+</style>
 @endsection
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-gray-900">Project Calendar</h1>
-            <a href="{{ route('projects.index') }}" class="text-blue-600 hover:text-blue-800">
-                View All Projects
-            </a>
-        </div>
+<div class="page-wrap">
+    <div class="page-header">
+        <h1 class="page-title">Project calendar</h1>
+        <a href="{{ route('projects.index') }}" class="btn-secondary">View all projects</a>
+    </div>
+
+    <div class="card card-body">
         <div id="calendar"></div>
     </div>
 </div>

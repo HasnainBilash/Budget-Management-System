@@ -1,79 +1,93 @@
 @extends('layouts.app')
 
+@section('title', 'Spending Trends')
+
 @section('content')
-<div class="bg-gray-100 min-h-screen p-8">
-    <div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 class="text-3xl font-bold mb-6 text-gray-900">Spending Trends</h1>
-        <p class="text-lg text-gray-600 mb-4">Analyze total spending trends across the user base.</p>
-
-        <div class="mb-6">
-            <h2 class="text-2xl font-semibold text-green-800">Total Spending</h2>
-            <p class="text-4xl font-bold text-gray-800 mt-2">${{ number_format($totalSpending, 2) }}</p>
-        </div>
-
-        <div class="mb-6">
-            <h2 class="text-2xl font-semibold text-blue-800">Spending by Category</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                @foreach($spendingByCategory as $category => $amount)
-                    <div class="bg-blue-50 p-4 rounded-lg shadow-md text-center">
-                        <h3 class="text-xl font-bold text-blue-600">{{ $category }}</h3>
-                        <p class="text-lg text-gray-800 mt-2">${{ number_format($amount, 2) }}</p>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-
-        <div class="mb-6">
-            <h2 class="text-2xl font-semibold text-purple-800">Spending by Month</h2>
-            <div class="mt-4">
-                <table class="w-full text-left border-collapse bg-white shadow-md">
-                    <thead>
-                        <tr class="bg-purple-100">
-                            <th class="p-4 text-purple-800 font-semibold">Month</th>
-                            <th class="p-4 text-purple-800 font-semibold">Total Spending</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($spendingByMonth as $month => $amount)
-                            <tr class="border-t">
-                                <td class="p-4 text-gray-800">{{ \Carbon\Carbon::createFromFormat('Y-m', $month)->format('F Y') }}</td>
-                                <td class="p-4 text-gray-800">${{ number_format($amount, 2) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
+<div class="page-wrap">
+    <div class="page-header">
         <div>
-            <h2 class="text-2xl font-semibold text-red-800">Detailed Budget Information</h2>
-            <div class="mt-4">
-                <table class="w-full text-left border-collapse bg-white shadow-md">
+            <h1 class="page-title">Spending trends</h1>
+            <p class="page-subtitle">Total spending across the whole user base.</p>
+        </div>
+    </div>
+
+    <div class="card card-body mb-10">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Total spending</h2>
+        <p class="text-4xl font-bold text-slate-900 mt-2">${{ number_format($totalSpending, 2) }}</p>
+    </div>
+
+    <div class="mb-10">
+        <h2 class="text-lg font-semibold text-slate-900 mb-4">Spending by category</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            @forelse($spendingByCategory as $category => $amount)
+                <div class="card card-body text-center">
+                    <h3 class="font-semibold text-slate-900">{{ $category }}</h3>
+                    <p class="text-lg text-emerald-700 font-bold mt-1">${{ number_format($amount, 2) }}</p>
+                </div>
+            @empty
+                <div class="col-span-full empty-state">
+                    <p class="text-slate-500">No spending data yet.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
+    <div class="mb-10">
+        <h2 class="text-lg font-semibold text-slate-900 mb-4">Spending by month</h2>
+        <div class="card overflow-hidden">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-200">
+                        <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Month</th>
+                        <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Total spending</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($spendingByMonth as $month => $amount)
+                        <tr>
+                            <td class="px-4 py-3 text-sm text-slate-700">{{ \Carbon\Carbon::createFromFormat('Y-m', $month)->format('F Y') }}</td>
+                            <td class="px-4 py-3 text-sm font-medium text-slate-900">${{ number_format($amount, 2) }}</td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="2" class="px-4 py-6 text-center text-sm text-slate-500">No data yet.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-lg font-semibold text-slate-900 mb-4">Detailed budget information</h2>
+        <div class="card overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
                     <thead>
-                        <tr class="bg-red-100">
-                            <th class="p-4 text-red-800 font-semibold">Category</th>
-                            <th class="p-4 text-red-800 font-semibold">Budget Amount</th>
-                            <th class="p-4 text-red-800 font-semibold">Remaining Amount</th>
-                            <th class="p-4 text-red-800 font-semibold">Amount Spent</th>
-                            <th class="p-4 text-red-800 font-semibold">Amount Exceeded</th>
+                        <tr class="bg-slate-50 border-b border-slate-200">
+                            <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Category</th>
+                            <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Budget</th>
+                            <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Remaining</th>
+                            <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Spent</th>
+                            <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Exceeded</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach($spendingData as $data)
-                            <tr class="border-t">
-                                <td class="p-4 text-gray-800">{{ $data->category }}</td>
-                                <td class="p-4 text-gray-800">${{ number_format($data->budget_amount, 2) }}</td>
-                                <td class="p-4 text-gray-800">${{ number_format($data->remaining_amount, 2) }}</td>
-                                <td class="p-4 text-gray-800">${{ number_format($data->spent_amount, 2) }}</td>
-                                <td class="p-4 text-gray-800">
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse($spendingData as $data)
+                            <tr>
+                                <td class="px-4 py-3 text-sm font-medium text-slate-900">{{ $data->category }}</td>
+                                <td class="px-4 py-3 text-sm text-slate-700">${{ number_format($data->budget_amount, 2) }}</td>
+                                <td class="px-4 py-3 text-sm text-slate-700">${{ number_format($data->remaining_amount, 2) }}</td>
+                                <td class="px-4 py-3 text-sm text-slate-700">${{ number_format($data->spent_amount, 2) }}</td>
+                                <td class="px-4 py-3 text-sm">
                                     @if ($data->amount_exceeded > 0)
-                                        <span class="text-red-600">${{ number_format($data->amount_exceeded, 2) }}</span>
+                                        <span class="font-semibold text-red-600">${{ number_format($data->amount_exceeded, 2) }}</span>
                                     @else
-                                        <span class="text-green-600">None</span>
+                                        <span class="text-slate-400">&mdash;</span>
                                     @endif
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr><td colspan="5" class="px-4 py-6 text-center text-sm text-slate-500">No budget data yet.</td></tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
