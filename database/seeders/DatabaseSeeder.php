@@ -16,22 +16,22 @@ class DatabaseSeeder extends Seeder
         $adminEmail = env('ADMIN_EMAIL');
         $adminPassword = env('ADMIN_PASSWORD');
 
-        if (! $adminEmail || ! $adminPassword) {
+        if ($adminEmail && $adminPassword) {
+            User::firstOrCreate(
+                ['email' => $adminEmail],
+                [
+                    'name' => env('ADMIN_NAME', 'Admin'),
+                    'phone' => env('ADMIN_PHONE'),
+                    'dob' => env('ADMIN_DOB', '1990-01-01'),
+                    'password' => Hash::make($adminPassword),
+                    'active' => true,
+                    'role' => 'admin',
+                ]
+            );
+        } else {
             $this->command?->warn('Skipping admin seed: set ADMIN_EMAIL and ADMIN_PASSWORD in .env to create the initial admin account.');
-
-            return;
         }
 
-        User::firstOrCreate(
-            ['email' => $adminEmail],
-            [
-                'name' => env('ADMIN_NAME', 'Admin'),
-                'phone' => env('ADMIN_PHONE'),
-                'dob' => env('ADMIN_DOB', '1990-01-01'),
-                'password' => Hash::make($adminPassword),
-                'active' => true,
-                'role' => 'admin',
-            ]
-        );
+        $this->call(DemoSeeder::class);
     }
 }

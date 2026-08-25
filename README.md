@@ -55,6 +55,15 @@ Edit `.env`: set `DB_CONNECTION`, `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_P
 
 New accounts default to the `user` role. To create the initial admin account, set `ADMIN_EMAIL` and `ADMIN_PASSWORD` (and optionally `ADMIN_NAME`) in `.env`, then run `php artisan db:seed`. This is safe to run more than once — it won't duplicate or overwrite an existing account with that email. There's no in-app UI to promote further users; see **Known limitations** below.
 
+### Demo account
+
+`php artisan db:seed` also creates a demo account pre-populated with sample projects, tasks, subtasks, and budgets, so there's something to look at immediately:
+
+- **Email:** `demo@example.com`
+- **Password:** `Demo1234!`
+
+Also idempotent — running the seeder again won't duplicate its data.
+
 ## Testing
 
 ```bash
