@@ -15,7 +15,7 @@ class TaskController extends Controller
         $activeTasks = auth()->user()->tasks()
             ->with('project')
             ->whereIn('tasks.status', ['to_do', 'in_progress'])
-            ->orderByRaw("FIELD(tasks.priority, 'high', 'medium', 'low')")
+            ->orderByRaw("CASE tasks.priority WHEN 'high' THEN 1 WHEN 'medium' THEN 2 WHEN 'low' THEN 3 END")
             ->orderBy('tasks.due_date')
             ->get();
 

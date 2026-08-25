@@ -13,7 +13,7 @@ class SubtaskController extends Controller
      */
     public function index(Task $task)
     {
-        $subtasks = $task->subtasks()->orderByRaw("FIELD(status, 'to_do', 'in_progress', 'done')")->get();
+        $subtasks = $task->subtasks()->orderByRaw("CASE status WHEN 'to_do' THEN 1 WHEN 'in_progress' THEN 2 WHEN 'done' THEN 3 END")->get();
 
         return view('subtasks.index', compact('task', 'subtasks'));
     }

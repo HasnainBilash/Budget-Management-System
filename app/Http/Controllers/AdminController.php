@@ -22,7 +22,7 @@ class AdminController extends Controller
 
     public function showTasks()
     {
-        $tasks = Task::orderByRaw("FIELD(priority, 'high', 'medium', 'low')")->get();
+        $tasks = Task::orderByRaw("CASE priority WHEN 'high' THEN 1 WHEN 'medium' THEN 2 WHEN 'low' THEN 3 END")->get();
         return view('admin.tasks', compact('tasks'));
     }
 

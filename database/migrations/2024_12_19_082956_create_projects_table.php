@@ -1,4 +1,3 @@
-// database/migrations/2024_12_19_create_projects_table.php
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -13,7 +12,9 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->date('deadline');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->enum('status', ['not_started', 'in_progress', 'completed', 'on_hold'])->default('not_started');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
