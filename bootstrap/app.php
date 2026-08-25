@@ -11,7 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // Trust the reverse proxy in front of the app (Railway, Render, etc.)
+        // so Laravel detects the original request scheme (https) correctly
+        // for generated URLs instead of assuming plain http.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
