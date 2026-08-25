@@ -53,17 +53,7 @@ Edit `.env`: set `DB_CONNECTION`, `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_P
 
 ### Granting admin access
 
-New accounts default to the `user` role. To create the initial admin account, set `ADMIN_EMAIL` and `ADMIN_PASSWORD` (and optionally `ADMIN_NAME`) in `.env`, then run:
-
-```bash
-php artisan db:seed
-```
-
-This is safe to run more than once — it won't duplicate or overwrite an existing account with that email. There's still no in-app UI to promote further users to admin; do that directly:
-
-```bash
-php artisan tinker --execute="App\Models\User::where('email', 'you@example.com')->update(['role' => 'admin']);"
-```
+New accounts default to the `user` role. To create the initial admin account, set `ADMIN_EMAIL` and `ADMIN_PASSWORD` (and optionally `ADMIN_NAME`) in `.env`, then run `php artisan db:seed`. This is safe to run more than once — it won't duplicate or overwrite an existing account with that email. There's no in-app UI to promote further users; see **Known limitations** below.
 
 ## Testing
 
@@ -71,7 +61,48 @@ php artisan tinker --execute="App\Models\User::where('email', 'you@example.com')
 php artisan test
 ```
 
+## Deployment
+
+The repo includes a `Procfile` for Heroku-style / Nixpacks platforms (Railway, Heroku, etc.) — it runs migrations and the admin seed as a release step, then serves the app. Requirements:
+
+- PHP 8.2+, with the `pdo_sqlite` or `pdo_mysql`/`pdo_pgsql` extension for whichever `DB_CONNECTION` you use
+- Node 18+ available at build time (to run `npm run build`)
+
+### Environment checklist
+
+Set these on your host (most platforms have a dashboard or CLI for env vars — don't commit them):
+
+| Variable | Notes |
+|---|---|
+| `APP_ENV` | `production` |
+| `APP_DEBUG` | `false` — never `true` in production, it leaks stack traces |
+| `APP_KEY` | generate with `php artisan key:generate --show` and paste the output |
+| `APP_URL` | your deployed URL, e.g. `https://your-app.up.railway.app` |
+| `DB_CONNECTION` + `DB_*` | point at a real MySQL/PostgreSQL instance — SQLite works but isn't recommended for multi-user production |
+| `MAIL_MAILER` | `resend` |
+| `RESEND_KEY` | your Resend API key ([resend.com](https://resend.com)) |
+| `MAIL_FROM_ADDRESS` | `onboarding@resend.dev` works without setup; use your own verified domain in Resend for a real "from" address |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | creates the initial admin account when the seeder runs (see below) |
+
+### Build & release steps
+
+If your platform doesn't auto-run these via the `Procfile`'s `release` step, run them manually after each deploy:
+
+```bash
+composer install --no-dev --optimize-autoloader
+npm ci && npm run build
+php artisan migrate --force
+php artisan db:seed --force        # creates the admin account from ADMIN_EMAIL/ADMIN_PASSWORD
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+`php artisan serve` (what the `Procfile`'s `web` process uses) is fine for a portfolio-scale deployment. For real traffic, put the app behind PHP-FPM + nginx/Apache instead.
+
 ## Known limitations
 
-- No in-app UI for promoting additional users to admin beyond the seeded account (see above).
-- OTP delivery uses the `log` mail driver by default (`MAIL_MAILER=log` in `.env.example`), so reset codes land in `storage/logs/laravel.log` rather than an inbox until real SMTP credentials are configured (see `MAIL_*` in `.env.example`).
+- No in-app UI for promoting additional users to admin beyond the seeded account — do it directly:
+  ```bash
+  php artisan tinker --execute="App\Models\User::where('email', 'you@example.com')->update(['role' => 'admin']);"
+  ```
